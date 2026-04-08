@@ -142,13 +142,17 @@
     <footer class="bg-white border-top pt-5 pb-3">
         <div class="container text-center">
             <p class="mb-1 fw-bold">CÔNG TY CỔ PHẦN GIA DỤNG SHOP (Mô phỏng META.vn)</p>
-            <p class="text-muted small mb-3">Địa chỉ: 123 Đường Cầu Giấy, Hà Nội | Điện thoại: 024 3568 6969</p>
+            <<<<<<< HEAD <p class="text-muted small mb-3">Địa chỉ: 123 Đường Cầu Giấy, Hà Nội | Điện thoại: 024 3568
+                6969</p>
 
-            <p class="small">
-                <a href="{{ route('track.order') }}" class="text-decoration-none fw-bold text-primary">
-                    <i class="fa-solid fa-truck-fast me-1"></i> Tra cứu tình trạng đơn hàng
-                </a>
-            </p>
+                <p class="small">
+                    <a href="{{ route('track.order') }}" class="text-decoration-none fw-bold text-primary">
+                        <i class="fa-solid fa-truck-fast me-1"></i> Tra cứu tình trạng đơn hàng
+                    </a>
+                </p>
+                =======
+                <p class="text-muted small">Địa chỉ: 123 Đường Cầu Giấy, Hà Nội | Điện thoại: 024 3568 6969</p>
+                >>>>>>> 3580e560e1b73b25380ceed7a84d942bc8d8b768
         </div>
     </footer>
 

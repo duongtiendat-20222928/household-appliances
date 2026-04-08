@@ -12,8 +12,11 @@
                     @if (isset($categories))
                         @foreach ($categories as $cat)
                             <li>
-                                <a href="{{ route('category.show', $cat->id) }}"
+                                <a href="{{ route('category.show', $cat->id) }}" <<<<<<< HEAD
                                     class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark d-block py-2 border-bottom' }}">
+                                    =======
+                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark' }}">
+                                    >>>>>>> 3580e560e1b73b25380ceed7a84d942bc8d8b768
                                     <i class="fa-solid fa-angle-right me-2 text-muted"></i> {{ $cat->name }}
                                 </a>
                             </li>

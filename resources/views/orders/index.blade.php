@@ -53,55 +53,61 @@
                                                     <span class="badge bg-primary">Đang giao</span>
                                                 @elseif($order->status == 'completed')
                                                     <span class="badge bg-success">Hoàn thành</span>
-                                                @elseif($order->status == 'cancelled' || $order->status == 'canceled')
+                                                    <<<<<<< HEAD
+                                                @elseif($order->status == 'cancelled' || $order->status == 'canceled')=======@elseif($order->status == 'cancelled')>
+                                                    >>>>>> 3580e560e1b73b25380ceed7a84d942bc8d8b768
                                                     <span class="badge bg-danger">Đã hủy</span>
                                                 @else
                                                     <span class="badge bg-secondary">{{ $order->status }}</span>
+                                            @endif
+                                        </td>
+                                        <<<<<<< HEAD <td class="text-center">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <a href="{{ route('orders.show', $order->id) }}"
+                                                    class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+
+                                                @if ($order->status == 'pending')
+                                                    <form action="{{ route('user.orders.cancel', $order->id) }}"
+                                                        method="POST" class="d-inline"
+                                                        onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Thao tác này không thể hoàn tác.');">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <button type="submit"
+                                                            class="btn btn-sm btn-outline-danger fw-bold">
+                                                            <i class="fa-solid fa-circle-xmark"></i> Hủy
+                                                        </button>
+                                                    </form>
+                                                @elseif($order->status == 'canceled' || $order->status == 'cancelled')
+                                                    <button class="btn btn-sm btn-secondary disabled fw-bold" disabled>
+                                                        <i class="fa-solid fa-ban"></i> Đã hủy
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-sm btn-secondary disabled"
+                                                        title="Đơn hàng đã được xử lý, không thể hủy" disabled>
+                                                        <i class="fa-solid fa-lock"></i> Không thể hủy
+                                                    </button>
                                                 @endif
-                                            </td>
-
+                                            </div>
+                                            =======
                                             <td class="text-center">
-                                                <div class="d-flex justify-content-center gap-2">
-                                                    <a href="{{ route('orders.show', $order->id) }}"
-                                                        class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
-
-                                                    @if ($order->status == 'pending')
-                                                        <form action="{{ route('user.orders.cancel', $order->id) }}"
-                                                            method="POST" class="d-inline"
-                                                            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Thao tác này không thể hoàn tác.');">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <button type="submit"
-                                                                class="btn btn-sm btn-outline-danger fw-bold">
-                                                                <i class="fa-solid fa-circle-xmark"></i> Hủy
-                                                            </button>
-                                                        </form>
-                                                    @elseif($order->status == 'canceled' || $order->status == 'cancelled')
-                                                        <button class="btn btn-sm btn-secondary disabled fw-bold" disabled>
-                                                            <i class="fa-solid fa-ban"></i> Đã hủy
-                                                        </button>
-                                                    @else
-                                                        <button class="btn btn-sm btn-secondary disabled"
-                                                            title="Đơn hàng đã được xử lý, không thể hủy" disabled>
-                                                            <i class="fa-solid fa-lock"></i> Không thể hủy
-                                                        </button>
-                                                    @endif
-                                                </div>
+                                                <a href="{{ route('orders.show', $order->id) }}"
+                                                    class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                                                >>>>>>> 3580e560e1b73b25380ceed7a84d942bc8d8b768
                                             </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="text-center py-4">
-                            <i class="fa-solid fa-box-open fs-1 text-muted mb-3 opacity-50"></i>
-                            <p class="text-muted">Bạn chưa có đơn hàng nào.</p>
-                            <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
-                        </div>
-                    @endif
-                </div>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <i class="fa-solid fa-box-open fs-1 text-muted mb-3 opacity-50"></i>
+                        <p class="text-muted">Bạn chưa có đơn hàng nào.</p>
+                        <a href="/" class="btn btn-primary">Tiếp tục mua sắm</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
+</div>
 @endsection
