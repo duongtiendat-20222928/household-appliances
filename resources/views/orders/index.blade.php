@@ -42,7 +42,7 @@
                                 <tbody>
                                     @foreach ($orders as $order)
                                         <tr>
-                                            <td class="fw-bold">#{{ $order->id }}</td>
+                                            <td class="fw-bold text-primary">#{{ $order->id }}</td>
                                             <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-danger fw-bold">
                                                 {{ number_format($order->total_amount, 0, ',', '.') }} ₫</td>
@@ -53,15 +53,40 @@
                                                     <span class="badge bg-primary">Đang giao</span>
                                                 @elseif($order->status == 'completed')
                                                     <span class="badge bg-success">Hoàn thành</span>
-                                                @elseif($order->status == 'cancelled')
+                                                @elseif($order->status == 'cancelled' || $order->status == 'canceled')
                                                     <span class="badge bg-danger">Đã hủy</span>
                                                 @else
                                                     <span class="badge bg-secondary">{{ $order->status }}</span>
                                                 @endif
                                             </td>
+
                                             <td class="text-center">
-                                                <a href="{{ route('orders.show', $order->id) }}"
-                                                    class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <a href="{{ route('orders.show', $order->id) }}"
+                                                        class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+
+                                                    @if ($order->status == 'pending')
+                                                        <form action="{{ route('user.orders.cancel', $order->id) }}"
+                                                            method="POST" class="d-inline"
+                                                            onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Thao tác này không thể hoàn tác.');">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger fw-bold">
+                                                                <i class="fa-solid fa-circle-xmark"></i> Hủy
+                                                            </button>
+                                                        </form>
+                                                    @elseif($order->status == 'canceled' || $order->status == 'cancelled')
+                                                        <button class="btn btn-sm btn-secondary disabled fw-bold" disabled>
+                                                            <i class="fa-solid fa-ban"></i> Đã hủy
+                                                        </button>
+                                                    @else
+                                                        <button class="btn btn-sm btn-secondary disabled"
+                                                            title="Đơn hàng đã được xử lý, không thể hủy" disabled>
+                                                            <i class="fa-solid fa-lock"></i> Không thể hủy
+                                                        </button>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

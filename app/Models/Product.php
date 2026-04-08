@@ -14,9 +14,11 @@ class Product extends Model
         'brand_id',
         'name',
         'slug',
+        'image',
         'specifications',
         'warranty_months',
-        'status'
+        'status',
+        'stock'
     ];
 
     // Cực kỳ quan trọng: Ép kiểu cột JSON thành Array

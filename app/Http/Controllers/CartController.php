@@ -36,7 +36,11 @@ class CartController extends Controller
         if (isset($cart[$cartKey])) {
             $cart[$cartKey]['quantity'] += $request->quantity;
         } else {
-
+            $request->validate([
+                'quantity' => 'required|integer|min:1'
+            ], [
+                'quantity.min' => 'Lỗi: Số lượng mua ít nhất phải là 1!'
+            ]);
             // 1. Lấy thông tin sản phẩm từ CSDL
             $product = \App\Models\Product::with('variants')->findOrFail($request->product_id);
 

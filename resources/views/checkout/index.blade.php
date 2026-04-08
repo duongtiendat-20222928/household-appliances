@@ -118,6 +118,24 @@
                         <span class="fw-bold fs-5">Tổng cộng:</span>
                         <span class="fw-bold text-danger fs-4">{{ number_format($total, 0, ',', '.') }} ₫</span>
                     </div>
+                    @guest
+                        <div class="alert alert-warning mb-4 shadow-sm border-warning">
+                            <div class="d-flex">
+                                <i class="fa-solid fa-triangle-exclamation fs-3 me-3 text-warning mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Lưu ý quan trọng: Bạn chưa đăng nhập!</h6>
+                                    <p class="mb-0 small">
+                                        Khách vãng lai sẽ không thể tự theo dõi hoặc <strong>tự bấm hủy đơn hàng</strong> trên
+                                        website. Để quản lý đơn hàng dễ dàng và hưởng đặc quyền tự hủy đơn, vui lòng
+                                        <a href="{{ route('login') }}" class="alert-link fw-bold text-decoration-none">Đăng
+                                            nhập</a> hoặc
+                                        <a href="{{ route('register') }}" class="alert-link fw-bold text-decoration-none">Đăng
+                                            ký tài khoản</a> trước khi chốt đơn!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endguest
                 </div>
             </div>
         </div>

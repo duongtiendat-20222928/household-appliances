@@ -13,7 +13,7 @@
                         @foreach ($categories as $cat)
                             <li>
                                 <a href="{{ route('category.show', $cat->id) }}"
-                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark' }}">
+                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark d-block py-2 border-bottom' }}">
                                     <i class="fa-solid fa-angle-right me-2 text-muted"></i> {{ $cat->name }}
                                 </a>
                             </li>
@@ -68,4 +68,27 @@
                                                         {{ number_format($firstVariant->price, 0, ',', '.') }} đ</div>
                                                 @else
                                                     <div class="price-red fs-5">
-                                                        {{ number_format($
+                                                        {{ number_format($firstVariant->price, 0, ',', '.') }} đ</div>
+                                                @endif
+                                            @else
+                                                <div class="price-red fs-5">Liên hệ</div>
+                                            @endif
+                                        </div>
+                                        <a href="{{ route('product.show', $product->slug) }}"
+                                            class="btn btn-outline-primary w-100 btn-sm fw-bold">Xem chi tiết</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-12 text-center py-5">
+                            <i class="fa-solid fa-box-open fs-1 text-muted opacity-50 mb-3"></i>
+                            <h5 class="text-muted fw-bold">Danh mục này hiện đang trống!</h5>
+                            <p class="text-muted small">Chúng tôi đang cập nhật thêm sản phẩm, bạn quay lại sau nhé.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

@@ -93,6 +93,12 @@
             </form>
 
             <ul class="navbar-nav ms-auto d-flex flex-row gap-4">
+
+                <li class="nav-item">
+                    <a class="nav-link text-white text-center" href="{{ route('track.order') }}">
+                        <i class="fa-solid fa-truck-fast fs-4 d-block"></i> Tra cứu
+                    </a>
+                </li>
                 <li class="nav-item dropdown me-2">
                     @guest
                         <a class="nav-link text-white text-center" href="{{ route('login') }}">
@@ -136,7 +142,13 @@
     <footer class="bg-white border-top pt-5 pb-3">
         <div class="container text-center">
             <p class="mb-1 fw-bold">CÔNG TY CỔ PHẦN GIA DỤNG SHOP (Mô phỏng META.vn)</p>
-            <p class="text-muted small">Địa chỉ: 123 Đường Cầu Giấy, Hà Nội | Điện thoại: 024 3568 6969</p>
+            <p class="text-muted small mb-3">Địa chỉ: 123 Đường Cầu Giấy, Hà Nội | Điện thoại: 024 3568 6969</p>
+
+            <p class="small">
+                <a href="{{ route('track.order') }}" class="text-decoration-none fw-bold text-primary">
+                    <i class="fa-solid fa-truck-fast me-1"></i> Tra cứu tình trạng đơn hàng
+                </a>
+            </p>
         </div>
     </footer>
 
