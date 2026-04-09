@@ -31,7 +31,12 @@
 
             <p class="text-muted small mb-2">
                 Thương hiệu: <span class="text-meta fw-bold">{{ $product->brand->name ?? 'Đang cập nhật' }}</span> |
-                Tình trạng: <span class="text-success fw-bold">Còn hàng</span>
+                Tình trạng:
+                @if ($product->stock > 0)
+                    <span class="text-success fw-bold">Còn hàng ({{ $product->stock }})</span>
+                @else
+                    <span class="text-danger fw-bold">Hết hàng</span>
+                @endif
             </p>
 
             @php $defaultVariant = $product->variants->first(); @endphp
@@ -62,29 +67,29 @@
             <form action="{{ route('cart.add') }}" method="POST">
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                <div class="mb-3 p-3 bg-light border rounded">
-                    <label class="fw-bold small mb-2"><i class="fa-solid fa-shield-halved text-success me-1"></i> Chọn gói
-                        bảo hành mở rộng:</label>
-                    <select name="warranty_fee" class="form-select border-primary shadow-sm">
-                        <option value="0">Bảo hành mặc định ({{ $product->warranty_months ?? 12 }} tháng) - Miễn phí
-                        </option>
-                        <option value="500000">Gói Vàng: Thêm 1 năm bảo hành (+ 500.000 ₫)</option>
-                        <option value="800000">Gói Kim Cương: Thêm 2 năm bảo hành (+ 800.000 ₫)</option>
-                        <option value="1500000">Gói VIP: Lỗi 1 đổi 1 trong 2 năm (+ 1.500.000 ₫)</option>
-                    </select>
-                </div>
+
                 @if ($errors->has('error'))
                     <div class="alert alert-danger"><i
                             class="fa-solid fa-triangle-exclamation me-2"></i>{{ $errors->first('error') }}</div>
                 @endif
+
                 <div class="d-flex align-items-center gap-3 mb-4">
                     <div class="input-group" style="width: 150px;">
                         <span class="input-group-text bg-light">Số lượng</span>
-                        <input type="number" name="quantity" class="form-control text-center" value="1"
-                            min="1">
+                        <input type="number" name="quantity" class="form-control text-center" value="1" min="1"
+                            max="{{ $product->stock }}">
                     </div>
-                    <button type="submit" class="btn btn-danger btn-lg flex-grow-1 fw-bold text-uppercase">
+
+                    <button type="submit" name="action" value="add"
+                        class="btn btn-outline-danger btn-lg flex-grow-1 fw-bold text-uppercase"
+                        {{ $product->stock <= 0 ? 'disabled' : '' }}>
                         <i class="fa-solid fa-cart-plus me-2"></i> Thêm vào giỏ
+                    </button>
+
+                    <button type="submit" name="action" value="buy_now"
+                        class="btn btn-danger btn-lg flex-grow-1 fw-bold text-uppercase"
+                        {{ $product->stock <= 0 ? 'disabled' : '' }}>
+                        Mua ngay
                     </button>
                 </div>
             </form>

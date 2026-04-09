@@ -17,13 +17,20 @@
                         lý. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.
                     </p>
 
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="/" class="btn btn-outline-primary fw-bold px-4">
-                            <i class="fa-solid fa-house me-2"></i> Về trang chủ
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="{{ route('home') }}" class="btn btn-outline-primary px-4 fw-bold">
+                            <i class="fa-solid fa-house me-1"></i> Về trang chủ
                         </a>
-                        <a href="#" class="btn btn-danger fw-bold px-4">
-                            <i class="fa-solid fa-clipboard-list me-2"></i> Xem đơn hàng
-                        </a>
+
+                        @auth
+                            <a href="{{ route('orders.index') }}" class="btn btn-danger px-4 fw-bold">
+                                <i class="fa-solid fa-clipboard-list me-1"></i> Xem đơn hàng
+                            </a>
+                        @else
+                            <a href="{{ route('track.order') }}" class="btn btn-danger px-4 fw-bold">
+                                <i class="fa-solid fa-magnifying-glass-location me-1"></i> Tra cứu đơn hàng
+                            </a>
+                        @endauth
                     </div>
                 </div>
             </div>

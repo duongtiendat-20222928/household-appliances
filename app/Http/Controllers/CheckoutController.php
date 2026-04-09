@@ -8,68 +8,89 @@ use App\Models\Order;       // Thêm dòng này
 use App\Models\OrderItem;   // Thêm dòng này
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Lấy giỏ hàng ra
-        $cart = session()->get('cart', []);
-
-        // Nếu giỏ hàng trống thì đuổi về trang giỏ hàng
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('success', 'Giỏ hàng của bạn đang trống, hãy chọn sản phẩm trước nhé!');
+        // Kiểm tra xem khách đang đi từ nút Mua ngay hay từ Giỏ hàng sang
+        if ($request->query('mode') == 'buy_now') {
+            $cart = session()->get('buy_now_cart', []);
+            $mode = 'buy_now'; // Truyền biến mode ra view để dùng lát nữa
+        } else {
+            $cart = session()->get('cart', []);
+            $mode = 'cart';
         }
 
-        // Nếu có đồ, mở trang điền thông tin
-        return view('checkout.index', compact('cart'));
+        // Nếu không có hàng mà cố tình vào thì đuổi về trang chủ
+        if (empty($cart)) {
+            return redirect()->route('home')->with('error', 'Chưa có sản phẩm nào để thanh toán!');
+        }
+
+        return view('checkout.index', compact('cart', 'mode'));
     }
     public function process(Request $request)
     {
-        $cart = session()->get('cart', []);
-        if (empty($cart)) return redirect('/');
+        // 1. Xác định khách đang thanh toán Giỏ hàng thường hay thanh toán Mua ngay
+        $mode = $request->input('checkout_mode', 'cart');
+        $cart = ($mode == 'buy_now') ? session()->get('buy_now_cart', []) : session()->get('cart', []);
 
-        // 1. Tính tổng tiền
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        if (empty($cart)) {
+            return redirect()->route('home')->with('error', 'Không có sản phẩm nào để thanh toán!');
         }
 
-        // 2. Lưu thông tin vào bảng orders
-        $order = Order::create([
-            'user_id' => Auth::id(), // Nếu là khách vãng lai, cái này sẽ tự động là null
-            'receiver_name' => $request->receiver_name,
-            'receiver_phone' => $request->receiver_phone,
-            'receiver_email' => $request->receiver_email,
-            'shipping_address' => $request->shipping_address,
-            'note' => $request->note,
-            'payment_method' => $request->payment_method,
-            'total_amount' => $total,
-            'status' => 'pending' // Trạng thái: Chờ xử lý
-        ]);
+        // 2. Tính Tạm tính (Tiền sản phẩm)
+        $subtotal = 0;
+        foreach ($cart as $details) {
+            $subtotal += $details['price'] * $details['quantity'];
+        }
 
-        // 3. Lưu từng món đồ vào bảng order_items VÀ TRỪ TỒN KHO
-        foreach ($cart as $id => $item) {
-            // Nhét vào bảng chi tiết đơn hàng
-            OrderItem::create([
+        // 3. Lấy Tiền bảo hành từ Form và tính TỔNG CỘNG CUỐI CÙNG
+        $warrantyFee = (int) $request->input('warranty_fee', 0);
+        $totalAmount = $subtotal + $warrantyFee;
+
+        // Mẹo nhỏ: Lưu thông tin bảo hành vào Ghi chú luôn để Admin dễ đọc, 
+        // khỏi mất công phải tạo thêm cột mới trong Database (CSDL).
+        $warrantyText = '';
+        if ($warrantyFee == 500000) $warrantyText = ' (Khách mua kèm: Gói Vàng +500k)';
+        if ($warrantyFee == 1500000) $warrantyText = ' (Khách mua kèm: Gói VIP +1.500k)';
+
+        $finalNote = $request->note . $warrantyText;
+
+        // 4. LƯU VÀO BẢNG ĐƠN HÀNG (ORDERS)
+        $order = new \App\Models\Order();
+        $order->user_id = Auth::user()?->id; // Nếu có đăng nhập thì lưu ID, không thì null
+        $order->receiver_name = $request->receiver_name;
+        $order->receiver_phone = $request->receiver_phone;
+        $order->receiver_email = $request->receiver_email;
+        $order->shipping_address = $request->shipping_address;
+        $order->note = $finalNote;           // Ghi chú đã kèm thông tin gói bảo hành
+        $order->payment_method = $request->payment_method;
+        $order->total_amount = $totalAmount; // TỔNG TIỀN ĐÃ CỘNG BẢO HÀNH
+        $order->status = 'pending';          // Trạng thái chờ xử lý
+        $order->save();
+
+        // 5. LƯU CHI TIẾT SẢN PHẨM & TRỪ KHO
+        foreach ($cart as $id => $details) {
+            // Lưu vào bảng order_items
+            \App\Models\OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item['product_id'], // Lấy đúng ID gốc của sản phẩm
-                'product_name' => $item['name'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
+                'product_id' => $details['product_id'],
+                'product_name' => $details['name'],
+                'price' => $details['price'],
+                'quantity' => $details['quantity'],
             ]);
 
-            // TỰ ĐỘNG TRỪ TỒN KHO
-            // Tìm đúng sản phẩm đó trong kho
-            $product = \App\Models\Product::find($item['product_id']);
-            if ($product) {
-                // Lệnh decrement của Laravel sẽ tự động lấy số cũ trừ đi số lượng khách mua
-                $product->decrement('stock', $item['quantity']);
-            }
+            // Trừ số lượng tồn kho của sản phẩm
+            \App\Models\Product::where('id', $details['product_id'])->decrement('stock', $details['quantity']);
         }
 
-        // 4. Xóa sạch giỏ hàng trong Session
-        session()->forget('cart');
+        // 6. XÓA GIỎ HÀNG TƯƠNG ỨNG SAU KHI MUA XONG
+        if ($mode == 'buy_now') {
+            session()->forget('buy_now_cart'); // Mua ngay xong thì xóa giỏ tạm
+        } else {
+            session()->forget('cart');         // Đặt giỏ hàng xong thì làm trống giỏ
+        }
 
-        // 5. Chuyển hướng sang trang Cảm ơn
-        return redirect()->route('checkout.success')->with('success', 'Đặt hàng thành công!');
+        // 7. HOÀN THÀNH
+        return redirect()->route('checkout.success')->with('success', 'Chúc mừng bạn đã đặt hàng thành công!');
     }
 
     // HÀM MỚI: Hiển thị trang Cảm ơn

@@ -18,7 +18,7 @@
                         </div>
                     @endguest
 
-                    <form action="#" method="POST">
+                    <form action="{{ route('checkout.process') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label">Họ và tên người nhận <span class="text-danger">*</span></label>
@@ -52,6 +52,29 @@
                             <label class="form-label">Ghi chú đơn hàng</label>
                             <textarea name="note" class="form-control" rows="3" placeholder="Giao trong giờ hành chính, gói quà..."></textarea>
                         </div>
+
+                        <h5 class="fw-bold mb-3 mt-4">Gói bảo hành (Tùy chọn)</h5>
+                        <div class="border rounded p-3 mb-4 bg-light">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="warranty_fee" id="wr_0"
+                                    value="0" checked>
+                                <label class="form-check-label" for="wr_0">Bảo hành tiêu chuẩn (Miễn phí)</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="warranty_fee" id="wr_500"
+                                    value="500000">
+                                <label class="form-check-label text-warning fw-bold" for="wr_500">Gói Vàng: +1 năm
+                                    (500.000 ₫)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="warranty_fee" id="wr_vip"
+                                    value="1500000">
+                                <label class="form-check-label text-danger fw-bold" for="wr_vip">Gói VIP: 1 đổi 1
+                                    (1.500.000 ₫)</label>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="checkout_mode" value="{{ $mode ?? 'cart' }}">
 
                         <h5 class="fw-bold mb-3">Phương thức thanh toán</h5>
                         <div class="border rounded p-3 mb-2">
@@ -107,17 +130,27 @@
 
                     <div class="d-flex justify-content-between mb-2 small">
                         <span class="text-muted">Tạm tính:</span>
-                        <span class="fw-bold">{{ number_format($total, 0, ',', '.') }} ₫</span>
+                        <span class="fw-bold" id="subtotal_display"
+                            data-value="{{ $total }}">{{ number_format($total, 0, ',', '.') }} ₫</span>
                     </div>
+
                     <div class="d-flex justify-content-between mb-3 border-bottom pb-3 small">
                         <span class="text-muted">Phí vận chuyển:</span>
                         <span class="fw-bold text-success">Miễn phí</span>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold fs-5">Tổng cộng:</span>
-                        <span class="fw-bold text-danger fs-4">{{ number_format($total, 0, ',', '.') }} ₫</span>
+                    <div class="d-flex justify-content-between mb-3 border-bottom pb-3 small" id="warranty_row"
+                        style="display: none !important;">
+                        <span class="text-muted" id="warranty_name_display">Gói bảo hành:</span>
+                        <span class="fw-bold text-warning" id="warranty_fee_display">+0 ₫</span>
                     </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fw-bold fs-5">Tổng cộng:</span>
+                        <span class="fw-bold text-danger fs-4"
+                            id="total_display">{{ number_format($total, 0, ',', '.') }} ₫</span>
+                    </div>
+
                     @guest
                         <div class="alert alert-warning mb-4 shadow-sm border-warning">
                             <div class="d-flex">
@@ -129,7 +162,8 @@
                                         website. Để quản lý đơn hàng dễ dàng và hưởng đặc quyền tự hủy đơn, vui lòng
                                         <a href="{{ route('login') }}" class="alert-link fw-bold text-decoration-none">Đăng
                                             nhập</a> hoặc
-                                        <a href="{{ route('register') }}" class="alert-link fw-bold text-decoration-none">Đăng
+                                        <a href="{{ route('register') }}"
+                                            class="alert-link fw-bold text-decoration-none">Đăng
                                             ký tài khoản</a> trước khi chốt đơn!
                                     </p>
                                 </div>
@@ -140,4 +174,42 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const warrantyRadios = document.querySelectorAll('input[name="warranty_fee"]');
+            const subtotalElement = document.getElementById('subtotal_display');
+            const totalElement = document.getElementById('total_display');
+            const warrantyRow = document.getElementById('warranty_row');
+            const warrantyNameDisplay = document.getElementById('warranty_name_display');
+            const warrantyFeeDisplay = document.getElementById('warranty_fee_display');
+
+            const baseSubtotal = parseInt(subtotalElement.getAttribute('data-value'));
+
+            function formatCurrency(number) {
+                return new Intl.NumberFormat('vi-VN').format(number) + ' ₫';
+            }
+
+            warrantyRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const warrantyFee = parseInt(this.value);
+                    const newTotal = baseSubtotal + warrantyFee;
+
+                    totalElement.textContent = formatCurrency(newTotal);
+
+                    if (warrantyFee > 0) {
+                        warrantyRow.style.setProperty('display', 'flex', 'important');
+                        warrantyFeeDisplay.textContent = '+' + formatCurrency(warrantyFee);
+
+                        const label = document.querySelector(`label[for="${this.id}"]`).textContent;
+                        warrantyNameDisplay.textContent = label.split('(')[0].trim() + ':';
+                    } else {
+                        warrantyRow.style.setProperty('display', 'none', 'important');
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

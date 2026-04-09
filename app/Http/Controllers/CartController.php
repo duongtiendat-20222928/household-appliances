@@ -10,60 +10,50 @@ class CartController extends Controller
     // Hàm Thêm sản phẩm vào giỏ hàng
     public function add(Request $request)
     {
-        // 1. Lấy thông tin sản phẩm từ CSDL
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ], [
+            'quantity.min' => 'Lỗi: Số lượng mua ít nhất phải là 1!'
+        ]);
+
         $product = \App\Models\Product::with('variants')->findOrFail($request->product_id);
 
-        // Lấy giá bán (ưu tiên giá khuyến mãi nếu có)
-        $basePrice = $product->variants->first()->sale_price ?? $product->variants->first()->price ?? 0;
-
-        // 2. Xử lý giá Gói Bảo Hành
-        $warrantyFee = (int) $request->warranty_fee;
-        $finalPrice = $basePrice + $warrantyFee; // Tiền SP + Tiền Bảo Hành
-
-        // Đặt tên gói bảo hành để hiển thị
-        $warrantyText = '';
-        if ($warrantyFee == 500000) $warrantyText = ' (Gói Vàng: +1 năm)';
-        if ($warrantyFee == 800000) $warrantyText = ' (Gói Kim Cương: +2 năm)';
-        if ($warrantyFee == 1500000) $warrantyText = ' (Gói VIP: 1 đổi 1)';
-
-        $cart = session()->get('cart', []);
-
-        // 3. Tạo một ID đặc biệt cho Giỏ hàng. 
-        // Ví dụ: cùng là Tủ Lạnh, nhưng ông mua Gói Vàng phải khác dòng với ông mua Gói VIP
-        $cartKey = $product->id . '_' . $warrantyFee;
-
-        // Nếu sản phẩm (kèm đúng gói bảo hành đó) đã có trong giỏ, thì cộng dồn số lượng
-        if (isset($cart[$cartKey])) {
-            $cart[$cartKey]['quantity'] += $request->quantity;
-        } else {
-            $request->validate([
-                'quantity' => 'required|integer|min:1'
-            ], [
-                'quantity.min' => 'Lỗi: Số lượng mua ít nhất phải là 1!'
-            ]);
-            // 1. Lấy thông tin sản phẩm từ CSDL
-            $product = \App\Models\Product::with('variants')->findOrFail($request->product_id);
-
-            // --- ĐOẠN CODE KIỂM TRA TỒN KHO MỚI THÊM ---
-            if ($product->stock < $request->quantity) {
-                // Nếu kho ít hơn số lượng khách muốn mua thì báo lỗi và đuổi về
-                return redirect()->back()->withErrors(['error' => 'Rất tiếc! Sản phẩm này chỉ còn ' . $product->stock . ' chiếc trong kho.']);
-            } // Nếu chưa có thì tạo dòng mới
-            $cart[$cartKey] = [
-                'name' => $product->name . $warrantyText, // Ghép tên gói bảo hành vào đuôi tên SP
-                'price' => $finalPrice,                   // Giá đã cộng tiền bảo hành
-                'quantity' => $request->quantity,
-                'image' => "https://placehold.co/400x400?text=" . urlencode($product->name),
-                'product_id' => $product->id              // Lưu lại ID gốc để trừ kho sau này
-            ];
+        if ($product->stock < $request->quantity) {
+            return redirect()->back()->withErrors(['error' => 'Rất tiếc! Sản phẩm này chỉ còn ' . $product->stock . ' chiếc.']);
         }
 
-        // Lưu lại vào Session
+        $basePrice = $product->variants->first()->sale_price ?? $product->variants->first()->price ?? 0;
+
+        // Tạo mảng thông tin sản phẩm chuẩn (Đã bỏ phần ghép tên Bảo hành)
+        $item = [
+            'name' => $product->name,
+            'price' => $basePrice,
+            'quantity' => $request->quantity,
+            'image' => $product->image ? asset($product->image) : "https://placehold.co/400x400?text=" . urlencode($product->name),
+            'product_id' => $product->id
+        ];
+
+        // 1. NẾU KHÁCH BẤM "MUA NGAY"
+        if ($request->action == 'buy_now') {
+            // Tạo một giỏ hàng "Tạm thời" chỉ chứa đúng món này và lưu vào session riêng
+            session()->put('buy_now_cart', [$product->id => $item]);
+
+            // Chuyển sang trang thanh toán kèm theo "tín hiệu" báo đây là đơn mua ngay
+            return redirect()->route('checkout.index', ['mode' => 'buy_now']);
+        }
+
+        // 2. NẾU KHÁCH BẤM "THÊM VÀO GIỎ"
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$product->id])) {
+            $cart[$product->id]['quantity'] += $request->quantity;
+        } else {
+            $cart[$product->id] = $item;
+        }
+
         session()->put('cart', $cart);
-
-        return redirect()->back()->with('success', 'Đã thêm sản phẩm và gói bảo hành vào giỏ!');
+        return redirect()->back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
     }
-
     // Hàm hiển thị trang Giỏ hàng
     public function index()
     {

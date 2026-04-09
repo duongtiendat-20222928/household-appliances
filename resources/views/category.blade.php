@@ -8,16 +8,15 @@
         <div class="col-lg-3 d-none d-lg-block">
             <div class="bg-white p-3 rounded shadow-sm border">
                 <h6 class="fw-bold mb-3 border-bottom pb-2"><i class="fa-solid fa-bars me-2"></i> DANH MỤC GIA DỤNG</h6>
-                <ul class="list-unstyled sidebar-menu mb-0" style="font-size: 14px;">
+                <ul class="list-unstyled sidebar-menu mb-0" style="font-size: 15px;">
                     @if (isset($categories))
                         @foreach ($categories as $cat)
                             <li>
-                                <a href="{{ route('category.show', $cat->id) }}" <<<<<<< HEAD
-                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark d-block py-2 border-bottom' }}">
-                                    =======
-                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark' }}">
-                                    >>>>>>> 3580e560e1b73b25380ceed7a84d942bc8d8b768
-                                    <i class="fa-solid fa-angle-right me-2 text-muted"></i> {{ $cat->name }}
+                                <a href="{{ route('category.show', $cat->id) }}"
+                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark' }} text-decoration-none d-block py-2 border-bottom">
+                                    <i
+                                        class="fa-solid fa-caret-right me-2 {{ $currentCategory->id == $cat->id ? 'text-danger' : 'text-primary' }}"></i>
+                                    {{ $cat->name }}
                                 </a>
                             </li>
                         @endforeach
