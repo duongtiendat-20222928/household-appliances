@@ -19,7 +19,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tim-kiem', [HomeController::class, 'search'])->name('search');
 // 2. Route Chi tiết sản phẩm (Đây chính là cái đang bị thiếu gây ra lỗi)
 Route::get('/san-pham/{slug}', [ProductController::class, 'show'])->name('product.show');
-
+// Route cho trang Tất cả sản phẩm
+Route::get('/san-pham', [\App\Http\Controllers\ProductController::class, 'index'])->name('products.index');
+// Route lưu đánh giá (Chỉ người đã đăng nhập mới được dùng - middleware auth)
+Route::post('/reviews/store', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store')->middleware('auth');
 // 3. Các Route của Giỏ hàng
 Route::get('/gio-hang', [CartController::class, 'index'])->name('cart.index');
 Route::post('/gio-hang/them', [CartController::class, 'add'])->name('cart.add');

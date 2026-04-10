@@ -11,6 +11,28 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
+        /* Hiệu ứng hover phóng to ảnh tin tức */
+        .hover-zoom img {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-zoom:hover img {
+            transform: scale(1.05);
+        }
+
+        .hover-zoom:hover p {
+            color: #007bff;
+        }
+
+        /* ẨN TEXT "SHOWING..." CỦA PHÂN TRANG VÀ CĂN GIỮA NÚT BẤM */
+        nav .d-sm-flex.align-items-sm-center>div:first-child {
+            display: none !important;
+        }
+
+        nav .justify-content-sm-between {
+            justify-content: center !important;
+        }
+
         body {
             background-color: #f4f4f4;
             font-family: Arial, sans-serif;
@@ -151,6 +173,17 @@
                             <i class="fa-solid fa-user-check fs-4 d-block"></i> Chào, {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+
+                            @if (Auth::user()->role === 'admin')
+                                <li>
+                                    <a class="dropdown-item py-2 fw-bold text-danger" href="{{ url('/admin') }}">
+                                        <i class="fa-solid fa-gauge me-2"></i>Vào Trang Quản Trị
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                            @endif
                             <li><a class="dropdown-item py-2" href="{{ route('orders.index') }}"><i
                                         class="fa-solid fa-clipboard-list me-2 text-primary"></i>Đơn hàng của tôi</a></li>
                             <li>

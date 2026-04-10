@@ -9,14 +9,11 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Chỉ lấy 6 sản phẩm ngẫu nhiên (hoặc mới nhất) làm mồi nhử
+        $featuredProducts = \App\Models\Product::inRandomOrder()->take(6)->get();
         $categories = \App\Models\Category::all();
 
-        $products = \App\Models\Product::with(['category', 'variants'])
-            ->where('status', 'published')
-            ->get();
-
-        // Truyền cả $products và $categories sang view
-        return view('home', compact('products', 'categories'));
+        return view('home', compact('featuredProducts', 'categories'));
     }
     // Hàm xử lý Tìm kiếm
     public function search(Request $request)

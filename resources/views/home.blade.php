@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="row">
-
         <div class="col-lg-3 d-none d-lg-block" data-aos="fade-right">
             <div class="bg-white p-3 rounded shadow-sm border h-100">
                 <h6 class="fw-bold mb-3 border-bottom pb-3 text-primary">
@@ -23,27 +22,18 @@
         </div>
 
         <div class="col-lg-9">
-
-            {{-- BANNER: Đã thêm carousel-fade để chuyển ảnh mờ ảo thay vì trượt ngang --}}
+            {{-- BANNER --}}
             <div id="heroBanner" class="carousel slide carousel-fade mb-4 shadow rounded overflow-hidden"
                 data-bs-ride="carousel" data-bs-interval="3500" data-aos="fade-down">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         <img src="{{ asset('images/banners/banner.jpg') }}" class="d-block w-100"
-                            style="object-fit: cover; height: 400px; transition: transform 0.5s ease;">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{{ asset('images/banners/banner2.png') }}" class="d-block w-100"
-                            style="object-fit: cover; height: 400px;">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="{{ asset('images/banners/banner3.png') }}" class="d-block w-100"
                             style="object-fit: cover; height: 400px;">
                     </div>
                 </div>
             </div>
 
-            {{-- SẢN PHẨM --}}
+            {{-- KHỐI SẢN PHẨM NỔI BẬT --}}
             <div class="bg-white p-4 rounded shadow-sm border mb-4" data-aos="fade-up">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
                     <h4 class="fw-bold m-0 text-uppercase text-dark">
@@ -53,109 +43,101 @@
                 </div>
 
                 <div class="row g-4">
-                    @forelse($products as $product)
-                        <div class="col-md-4 col-sm-6" data-aos="zoom-in-up" data-aos-delay="{{ $loop->index * 100 }}">
-                            <div class="card h-100 border product-card position-relative overflow-hidden">
-
-                                <div class="discount-badge">-15%</div>
-
-                                <a href="{{ route('product.show', $product->slug) }}" class="overflow-hidden p-3 d-block">
-                                    <img src="{{ $product->image ? asset($product->image) : 'https://placehold.co/400x400?text=No+Image' }}"
-                                        class="card-img-top" style="object-fit: contain; height: 220px; transition: 0.5s;"
-                                        onmouseover="this.style.transform='scale(1.1)'"
-                                        onmouseout="this.style.transform='scale(1)'">
-                                </a>
-
-                                <div class="card-body px-3 pt-2 pb-3 d-flex flex-column bg-white">
-
-                                    {{-- Tên --}}
-                                    <a href="{{ route('product.show', $product->slug) }}"
-                                        class="text-decoration-none text-dark">
-                                        <h6 class="card-title fw-bold"
-                                            style="font-size: 15px; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">
-                                            {{ $product->name }}
-                                        </h6>
-                                    </a>
-
-                                    {{-- ⭐ Rating --}}
-                                    <div class="text-warning mb-2" style="font-size: 12px;">
-                                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                            class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                                            class="fa-solid fa-star-half-stroke"></i>
-                                        <span class="text-muted ms-1">(99+)</span>
-                                    </div>
-
-                                    {{-- 📦 Tồn kho --}}
-                                    <div class="mb-3 text-muted bg-light px-2 py-1 rounded small">
-                                        <i class="fa-solid fa-box-archive me-1 text-primary"></i>
-                                        @if ($product->stock > 0)
-                                            Còn: <strong class="text-success">{{ $product->stock }}</strong> sp
-                                        @else
-                                            <strong class="text-danger">Hết hàng</strong>
-                                        @endif
-                                    </div>
-
-                                    <div class="mt-auto">
-                                        {{-- Giá --}}
-                                        <div class="mb-3">
-                                            @if ($product->variants->isNotEmpty())
-                                                @php $firstVariant = $product->variants->first(); @endphp
-
-                                                @if ($firstVariant->sale_price)
-                                                    <div class="price-red fs-5 mb-1">
-                                                        {{ number_format($firstVariant->sale_price, 0, ',', '.') }} đ</div>
-                                                    <div class="price-old d-inline-block px-1 rounded">
-                                                        {{ number_format($firstVariant->price, 0, ',', '.') }} đ</div>
-                                                @else
-                                                    <div class="price-red fs-5">
-                                                        {{ number_format($firstVariant->price, 0, ',', '.') }} đ</div>
-                                                @endif
-                                            @else
-                                                <div class="price-red fs-5">Liên hệ</div>
-                                            @endif
-                                        </div>
-
-                                        {{-- Button Nâng cấp --}}
-                                        <div class="mt-3">
-                                            <form action="{{ route('cart.add') }}" method="POST"
-                                                class="d-flex gap-2 mb-2">
-                                                @csrf
-                                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                <input type="hidden" name="quantity" value="1">
-                                                <input type="hidden" name="warranty_fee" value="0">
-
-                                                <button type="submit" name="action" value="add"
-                                                    class="btn btn-outline-primary w-50 btn-sm fw-bold px-1"
-                                                    title="Thêm vào giỏ">
-                                                    <i class="fa-solid fa-cart-plus"></i> Thêm giỏ
-                                                </button>
-
-                                                <button type="submit" name="action" value="buy_now"
-                                                    class="btn btn-gradient w-50 btn-sm fw-bold px-1"
-                                                    title="Thanh toán luôn">
-                                                    Mua ngay
-                                                </button>
-                                            </form>
-
-                                            <a href="{{ route('product.show', $product->slug) }}"
-                                                class="btn btn-light w-100 btn-sm border fw-bold text-muted">
-                                                <i class="fa-regular fa-eye me-1"></i> Xem chi tiết
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                    @forelse($featuredProducts as $product)
+                        @include('components.product-card', ['product' => $product])
                     @empty
-                        <div class="col-12 text-center py-5">
-                            <i class="fa-solid fa-box-open fs-1 text-muted opacity-50 mb-3"></i>
-                            <h6 class="text-muted fw-bold">Đang cập nhật sản phẩm...</h6>
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted">Chưa có sản phẩm nổi bật</p>
                         </div>
                     @endforelse
                 </div>
-            </div>
+                <div class="bg-white p-4 rounded shadow-sm border mb-4" data-aos="fade-up">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="fs-3 me-2">😎</span>
+                        <h4 class="fw-bold m-0 text-uppercase text-dark">#CHỦ ĐỀ</h4>
+                    </div>
 
+                    <div class="d-flex gap-2 mb-4 overflow-auto pb-2" style="white-space: nowrap;">
+                        <a href="#" class="btn btn-outline-primary px-4 fw-bold active"
+                            style="border-radius: 8px;">Khuyến mãi</a>
+                        <a href="#" class="btn btn-outline-secondary px-4 text-dark"
+                            style="border-radius: 8px; border-color: #ddd;">Mạng xã hội GiaDungShop</a>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="#" class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
+                                <div class="overflow-hidden rounded mb-2">
+                                    <img src="https://placehold.co/400x225/0052cc/ffffff?text=SALE+TO+GIA+RE"
+                                        class="w-100 rounded" style="transition: 0.3s; object-fit: cover; height: 140px;"
+                                        alt="News">
+                                </div>
+                                <p class="fw-bold mb-0"
+                                    style="font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    SALE TO GIÁ RẺ. Duy nhất 17H ngày 04/04 Cơ hội Trúng Máy lạnh 1 HP/ Quạt hộp trị giá lên
+                                    đến 5,49 triệu
+                                </p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <a href="#" class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
+                                <div class="overflow-hidden rounded mb-2">
+                                    <img src="https://placehold.co/400x225/00a8ff/ffffff?text=SAMSUNG+TV"
+                                        class="w-100 rounded" style="transition: 0.3s; object-fit: cover; height: 140px;"
+                                        alt="News">
+                                </div>
+                                <p class="fw-bold mb-0"
+                                    style="font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    Đặt Trước Bộ Đôi Xuất Sắc Tivi Samsung Mini LED M8X & OLED S85H Mới 2026: Nhận Quà Tặng
+                                    Khủng, Trả chậm 0%
+                                </p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <a href="#" class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
+                                <div class="overflow-hidden rounded mb-2">
+                                    <img src="https://placehold.co/400x225/555555/ffffff?text=SONY+HT-S60"
+                                        class="w-100 rounded" style="transition: 0.3s; object-fit: cover; height: 140px;"
+                                        alt="News">
+                                </div>
+                                <p class="fw-bold mb-0"
+                                    style="font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    Mua dàn âm thanh Sony HT-S60 tặng bộ chân đế loa rear System 6 chính hãng
+                                </p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6">
+                            <a href="#" class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
+                                <div class="overflow-hidden rounded mb-2">
+                                    <img src="https://placehold.co/400x225/ffcc00/333333?text=BAO+HANH+MO+RONG"
+                                        class="w-100 rounded" style="transition: 0.3s; object-fit: cover; height: 140px;"
+                                        alt="News">
+                                </div>
+                                <p class="fw-bold mb-0"
+                                    style="font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    Tổng hợp các gói dịch vụ bảo hành mở rộng, bảo hành 1 đổi 1 và gói vệ sinh máy lạnh
+                                    chuyên nghiệp
+                                </p>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4 pt-2">
+                        <a href="#" class="text-decoration-none fw-bold" style="color: #007bff; font-size: 15px;">
+                            Xem thêm <i class="fa-solid fa-chevron-right ms-1" style="font-size: 12px;"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="text-center mt-5">
+                    <a href="{{ route('products.index') }}" class="btn btn-outline-primary btn-lg fw-bold px-5"
+                        style="border-radius: 30px;">
+                        Xem tất cả sản phẩm <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
