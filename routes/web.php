@@ -43,7 +43,7 @@ Route::post('/dang-xuat', [AuthController::class, 'logout'])->name('logout');
 Route::post('/thanh-toan', [CheckoutController::class, 'process'])->name('checkout.process');
 // --- BÊN TRONG KHU VỰC DÀNH CHO KHÁCH HÀNG (FRONT-END) ---
 Route::get('/tra-cuu-don-hang', [App\Http\Controllers\HomeController::class, 'trackOrderForm'])->name('track.order');
-Route::post('/tra-cuu-don-hang', [App\Http\Controllers\HomeController::class, 'trackOrderSubmit'])->name('track.order.submit');
+Route::post('/tra-cuu-don-hang', [CheckoutController::class, 'checkTracking'])->name('track.order.submit');
 // Trang thông báo thành công
 Route::get('/dat-hang-thanh-cong', [CheckoutController::class, 'success'])->name('checkout.success');
 // Nhóm Route yêu cầu Đăng nhập mới được vào

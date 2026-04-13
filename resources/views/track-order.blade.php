@@ -21,7 +21,7 @@
                     @csrf
                     <div class="col-md-5">
                         <label class="form-label fw-bold">Mã đơn hàng</label>
-                        <input type="text" name="order_id" class="form-control" placeholder="VD: 15 hoặc #ORD-15"
+                        <input type="text" name="order_code" class="form-control" placeholder="VD: 15 hoặc #ORD-15"
                             value="{{ old('order_id') }}" required>
                     </div>
                     <div class="col-md-5">
@@ -38,7 +38,8 @@
 
                 @if (isset($order))
                     <div class="alert alert-success"><i class="fa-solid fa-check-circle me-2"></i>Tìm thấy đơn hàng
-                        <strong>#{{ $order->id }}</strong> của bạn!</div>
+                        <strong>#{{ $order->id }}</strong> của bạn!
+                    </div>
 
                     <div class="row mb-4">
                         <div class="col-sm-6">
@@ -74,14 +75,37 @@
                             </tr>
                         </thead>
                         <tbody>
+                        <tbody>
                             @foreach ($order->items as $item)
                                 <tr>
-                                    <td>{{ $item->product_name }}</td>
-                                    <td class="text-center">{{ $item->quantity }}</td>
-                                    <td class="text-end fw-bold">
-                                        {{ number_format($item->price * $item->quantity, 0, ',', '.') }} ₫</td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ $item->product_name ?? $item->product->name }}
+                                        </div>
+
+                                        <div class="small text-muted mt-1 bg-light d-inline-block px-2 py-1 rounded border">
+                                            <i class="fa-solid fa-shield-halved text-success me-1"></i>
+                                            Bảo hành: <strong class="text-dark">{{ $item->product->warranty_months ?? 12 }}
+                                                tháng</strong>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle">{{ $item->quantity }}</td>
+                                    <td class="text-end align-middle fw-bold">
+                                        {{ number_format($item->price * $item->quantity, 0, ',', '.') }} ₫
+                                    </td>
                                 </tr>
                             @endforeach
+
+                            @if ($order->note)
+                                <tr>
+                                    <td colspan="3" class="bg-light">
+                                        <span class="text-danger small fw-bold"><i class="fa-solid fa-star me-1"></i> Ghi
+                                            chú / Dịch vụ thêm:</span>
+                                        <span class="small fw-bold text-dark">{{ $order->note }}</span>
+                                    </td>
+                                </tr>
+                            @endif
+
+
                         </tbody>
                         <tfoot>
                             <tr>
