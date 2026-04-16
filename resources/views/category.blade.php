@@ -4,24 +4,30 @@
 
 @section('content')
     <div class="row">
-
-        <div class="col-lg-3 d-none d-lg-block">
-            <div class="bg-white p-3 rounded shadow-sm border">
-                <h6 class="fw-bold mb-3 border-bottom pb-2"><i class="fa-solid fa-bars me-2"></i> DANH MỤC GIA DỤNG</h6>
-                <ul class="list-unstyled sidebar-menu mb-0" style="font-size: 15px;">
-                    @if (isset($categories))
-                        @foreach ($categories as $cat)
-                            <li>
-                                <a href="{{ route('category.show', $cat->id) }}"
-                                    class="{{ $currentCategory->id == $cat->id ? 'text-danger fw-bold' : 'text-dark' }} text-decoration-none d-block py-2 border-bottom">
-                                    <i
-                                        class="fa-solid fa-caret-right me-2 {{ $currentCategory->id == $cat->id ? 'text-danger' : 'text-primary' }}"></i>
-                                    {{ $cat->name }}
-                                </a>
-                            </li>
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold text-primary">
+                    <i class="fa-solid fa-bars me-2"></i> DANH MỤC SẢN PHẨM
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush" id="categoryList">
+                        @foreach ($categories as $index => $category)
+                            <a href="{{ route('category.show', $category->id ?? ($category->slug ?? 1)) }}"
+                                class="list-group-item list-group-item-action border-0 category-item {{ $index >= 5 ? 'd-none' : '' }}">
+                                <i class="fa-solid fa-caret-right text-primary me-2"></i> {{ $category->name }}
+                            </a>
                         @endforeach
+                    </ul>
+
+                    @if (count($categories) > 5)
+                        <div class="text-center py-2 border-top bg-light">
+                            <button type="button" class="btn btn-sm text-primary fw-bold w-100" id="toggleCategoriesBtn"
+                                style="box-shadow: none;">
+                                Xem thêm <i class="fa-solid fa-angle-down ms-1"></i>
+                            </button>
+                        </div>
                     @endif
-                </ul>
+                </div>
             </div>
         </div>
 
@@ -36,7 +42,6 @@
                     @forelse($products as $product)
                         <div class="col-md-4 col-sm-6">
                             <div class="card h-100 border product-card position-relative">
-
                                 <a href="{{ route('product.show', $product->slug) }}">
                                     <img src="{{ $product->image ? asset($product->image) : 'https://placehold.co/400x400?text=No+Image' }}"
                                         class="card-img-top p-3" alt="{{ $product->name }}"
@@ -93,4 +98,29 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('toggleCategoriesBtn');
+            if (btn) {
+                btn.addEventListener('click', function() {
+                    // Tìm tất cả các danh mục đang bị ẩn
+                    let hiddenItems = document.querySelectorAll('.category-item.d-none');
+
+                    if (hiddenItems.length > 0) {
+                        // Nếu đang có mục bị ẩn -> Mở rộng hết ra
+                        hiddenItems.forEach(item => item.classList.remove('d-none'));
+                        btn.innerHTML = 'Thu gọn <i class="fa-solid fa-angle-up ms-1"></i>';
+                    } else {
+                        // Nếu đang hiện đầy đủ -> Ẩn bớt từ mục thứ 6 trở đi
+                        let allItems = document.querySelectorAll('.category-item');
+                        allItems.forEach((item, index) => {
+                            if (index >= 5) item.classList.add('d-none');
+                        });
+                        btn.innerHTML = 'Xem thêm <i class="fa-solid fa-angle-down ms-1"></i>';
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

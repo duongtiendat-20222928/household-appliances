@@ -3,15 +3,16 @@
 @section('content')
     <div class="row">
         <div class="col-lg-3 d-none d-lg-block" data-aos="fade-right">
-            <div class="bg-white p-3 rounded shadow-sm border h-100">
+            <div class="bg-white p-3 rounded shadow-sm border">
                 <h6 class="fw-bold mb-3 border-bottom pb-3 text-primary">
                     <i class="fa-solid fa-bars-staggered me-2"></i> DANH MỤC SẢN PHẨM
                 </h6>
                 <ul class="list-unstyled sidebar-menu mb-0" style="font-size: 15px;">
                     @if (isset($categories))
                         @foreach ($categories as $cat)
-                            <li>
-                                <a href="{{ route('category.show', $cat->id) }}">
+                            <li class="mb-2">
+                                <a href="{{ route('category.show', $cat->id) }}"
+                                    class="text-decoration-none text-dark d-block py-1">
                                     <i class="fa-solid fa-caret-right me-2 text-primary"></i> {{ $cat->name }}
                                 </a>
                             </li>
@@ -25,14 +26,40 @@
             {{-- BANNER --}}
             <div id="heroBanner" class="carousel slide carousel-fade mb-4 shadow rounded overflow-hidden"
                 data-bs-ride="carousel" data-bs-interval="3500" data-aos="fade-down">
+
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#heroBanner" data-bs-slide-to="0" class="active"
+                        aria-current="true"></button>
+                    <button type="button" data-bs-target="#heroBanner" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#heroBanner" data-bs-slide-to="2"></button>
+                </div>
+
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="{{ asset('images/banners/banner.jpg') }}" class="d-block w-100"
+                        <img src="{{ asset('images/banners/banner3.png') }}" class="d-block w-100"
+                            style="object-fit: cover; height: 400px;">
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src="{{ asset('images/banners/banner2.png') }}" class="d-block w-100"
+                            style="object-fit: cover; height: 400px;">
+                    </div>
+
+                    <div class="carousel-item">
+                        <img src="{{ asset('images/banners/banner4.png') }}" class="d-block w-100"
                             style="object-fit: cover; height: 400px;">
                     </div>
                 </div>
-            </div>
 
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroBanner" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Trước</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroBanner" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Sau</span>
+                </button>
+            </div>
             {{-- KHỐI SẢN PHẨM NỔI BẬT --}}
             <div class="bg-white p-4 rounded shadow-sm border mb-4" data-aos="fade-up">
                 <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
@@ -51,7 +78,7 @@
                         </div>
                     @endforelse
                 </div>
-                <div class="bg-white p-4 rounded shadow-sm border mb-4" data-aos="fade-up">
+                <div class="bg-white p-4 rounded shadow-sm border mb-4 mt-4" data-aos="fade-up">
                     <div class="d-flex align-items-center mb-3">
                         <span class="fs-3 me-2">😎</span>
                         <h4 class="fw-bold m-0 text-uppercase text-dark">#CHỦ ĐỀ</h4>
@@ -96,7 +123,8 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6">
-                            <a href="#" class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
+                            <a href="#"
+                                class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
                                 <div class="overflow-hidden rounded mb-2">
                                     <img src="https://placehold.co/400x225/555555/ffffff?text=SONY+HT-S60"
                                         class="w-100 rounded" style="transition: 0.3s; object-fit: cover; height: 140px;"
@@ -110,7 +138,8 @@
                         </div>
 
                         <div class="col-md-3 col-sm-6">
-                            <a href="#" class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
+                            <a href="#"
+                                class="text-decoration-none text-dark d-block card border-0 h-100 hover-zoom">
                                 <div class="overflow-hidden rounded mb-2">
                                     <img src="https://placehold.co/400x225/ffcc00/333333?text=BAO+HANH+MO+RONG"
                                         class="w-100 rounded" style="transition: 0.3s; object-fit: cover; height: 140px;"
