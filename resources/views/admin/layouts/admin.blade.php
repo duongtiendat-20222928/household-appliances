@@ -114,8 +114,7 @@
                     <div class="d-flex mx-3 flex-grow-1"></div>
                 @endif
                 <div style="min-width: 200px;" class="text-end">
-                    <span class="me-3">Xin chào, <strong
-                            class="text-primary">{{ Auth::user()->name }}</strong></span>
+                    <span class="me-3">Xin chào, <strong class="text-primary">{{ Auth::user()->name }}</strong></span>
                 </div>
             </div>
             <div class="main-content">
@@ -124,6 +123,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @yield('scripts')
 </body>
 
 </html>
